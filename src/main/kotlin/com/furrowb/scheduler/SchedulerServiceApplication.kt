@@ -1,4 +1,4 @@
-package com.furrowb.scheduler.SchedulerService
+package com.furrowb.scheduler
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
