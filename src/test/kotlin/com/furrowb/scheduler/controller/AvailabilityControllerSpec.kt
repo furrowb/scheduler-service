@@ -25,7 +25,7 @@ class AvailabilityControllerSpec: DescribeSpec ({
                     .contentType(MediaType.APPLICATION_JSON)
                     .content("""
                         {
-                            "startDateTime": "2020-10-11T06:30:00",
+                            "startDateTime": "2020-12-03T10:15:30+01:00",
                             "durationInMinutes": 5,
                             "timezone": "Blah",
                             "user": "The User"
