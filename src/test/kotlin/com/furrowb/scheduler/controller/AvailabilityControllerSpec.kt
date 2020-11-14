@@ -27,7 +27,6 @@ class AvailabilityControllerSpec: DescribeSpec ({
                         {
                             "startDateTime": "2020-12-03T10:15:30+01:00",
                             "durationInMinutes": 5,
-                            "timezone": "Blah",
                             "user": "The User"
                         }
                         """.trimIndent()))
