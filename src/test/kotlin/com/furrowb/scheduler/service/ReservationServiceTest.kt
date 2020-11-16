@@ -1,7 +1,6 @@
 package com.furrowb.scheduler.service
 
 import com.furrowb.scheduler.model.ReservationRequest
-import com.furrowb.scheduler.repository.ReservationRepository
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.extension.ExtendWith
