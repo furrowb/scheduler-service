@@ -5,7 +5,7 @@ import javax.validation.constraints.Min
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
-data class ReserveRequest(
+data class ReservationRequest(
         @field:NotNull(message = "startDateTime must be specified")
         val startDateTime: OffsetDateTime,
         @field:NotNull(message = "durationInMinutes must be specified")
