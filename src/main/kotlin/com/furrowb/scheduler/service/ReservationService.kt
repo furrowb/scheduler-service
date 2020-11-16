@@ -10,12 +10,12 @@ import javax.persistence.EntityExistsException
 
 @Service
 class ReservationService(@Autowired private val reservationRepo: ReservationRepository) {
-    fun scheduleReservation(request: ReservationRequest) {
-        persistReservation(request)
+    fun scheduleReservation(request: ReservationRequest): Reservation {
+        return persistReservation(request)
     }
 
     @Transactional
-    private fun persistReservation(request: ReservationRequest) {
+    private fun persistReservation(request: ReservationRequest): Reservation {
         val endDateTime = request.startDateTime.plusMinutes(request.durationInMinutes.toLong())
         val conflicts = reservationRepo.findSchedulingConflicts(request.startDateTime, endDateTime)
 
@@ -24,6 +24,6 @@ class ReservationService(@Autowired private val reservationRepo: ReservationRepo
         }
 
         val entity = Reservation(startDateTime = request.startDateTime, endDateTime = endDateTime, user = request.user)
-        reservationRepo.save(entity)
+        return reservationRepo.save(entity)
     }
 }

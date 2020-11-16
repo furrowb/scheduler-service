@@ -1,13 +1,12 @@
 package com.furrowb.scheduler.controller
 
 import com.furrowb.scheduler.model.entity.Reservation
-import com.furrowb.scheduler.service.ReservationService
 import com.furrowb.scheduler.testConfig.TestConfig
 import io.kotest.core.spec.style.DescribeSpec
+import io.mockk.clearMocks
 import io.mockk.every
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
@@ -22,26 +21,28 @@ class AvailabilityControllerSpec(): DescribeSpec ({
 
     describe("Reserve endpoint") {
         val endpoint = "/v1/availability/reserve"
+        val content = """
+                {
+                    "startDateTime": "2020-12-03T10:15:30+01:00",
+                    "durationInMinutes": 5,
+                    "user": "The User"
+                }
+            """.trimIndent()
 
         beforeEach {
-            every {TestConfig.reservationRepoMock.findSchedulingConflicts(any(), any()) } returns emptyList()
-            every {TestConfig.reservationRepoMock.save(any())} returns Reservation(0, OffsetDateTime.now(), OffsetDateTime.now(), "user")
+            every { TestConfig.reservationRepoMock.findSchedulingConflicts(any(), any()) } returns emptyList()
+            every { TestConfig.reservationRepoMock.save(any()) } returns Reservation(0, OffsetDateTime.now(), OffsetDateTime.now(), "user")
             mockMvc = MockMvcBuilders
                     .standaloneSetup(TestConfig().createAvailabilityController())
+                    .setControllerAdvice(RestExceptionHandler())
                     .build()
         }
 
-        it("returns a 200") {
+        it("returns a 201") {
             mockMvc.perform(MockMvcRequestBuilders.post(endpoint)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content("""
-                        {
-                            "startDateTime": "2020-12-03T10:15:30+01:00",
-                            "durationInMinutes": 5,
-                            "user": "The User"
-                        }
-                        """.trimIndent()))
-                    .andExpect(MockMvcResultMatchers.status().isOk)
+                    .content(content))
+                    .andExpect(MockMvcResultMatchers.status().isCreated)
         }
 
         listOf(
@@ -70,6 +71,22 @@ class AvailabilityControllerSpec(): DescribeSpec ({
                         .content(it.json))
                         .andExpect(MockMvcResultMatchers.status().isBadRequest)
             }
+        }
+
+        it("returns 409 if a scheduling conflict exists") {
+            mockMvc.perform(MockMvcRequestBuilders.post(endpoint)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(content))
+                    .andExpect(MockMvcResultMatchers.status().isCreated)
+
+            // Reset the mock to return a value on the next call
+            clearMocks(TestConfig.reservationRepoMock)
+            every { TestConfig.reservationRepoMock.findSchedulingConflicts(any(), any()) } returns listOf(Reservation())
+
+            mockMvc.perform(MockMvcRequestBuilders.post(endpoint)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(content))
+                    .andExpect(MockMvcResultMatchers.status().isConflict)
         }
     }
 })

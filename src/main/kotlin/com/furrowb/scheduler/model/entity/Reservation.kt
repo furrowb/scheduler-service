@@ -7,20 +7,25 @@ import javax.validation.constraints.NotNull
 
 @Entity
 @Table(name = "reservations")
-data class Reservation(
+// Due to JPA needing to extend the class, we must use open.
+// Also using `var` and default values for the variables because JPA requires
+// a default constructor and getter/setters to update the values
+open class Reservation(
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
-        val id: Long = 0, // default to 0 so auto-generation will provide the appropriate value
+        @get: Column(name = "id")
+        open var id: Long = 0, // default to 0 so auto-generation will provide the appropriate value
 
         @field:NotNull
-        @Column
-        val startDateTime: OffsetDateTime,
+        @get: Column(name = "startDateTime")
+        open var startDateTime: OffsetDateTime? = null,
 
         @field:NotNull
-        @Column
-        val endDateTime: OffsetDateTime,
+        @get: Column(name ="endDateTime")
+        open var endDateTime: OffsetDateTime? = null,
 
         @field: NotEmpty
-        @Column
-        val user: String
+        @get: Column(name = "user")
+        // Like mentioned elsewhere, I would create a one-to-many relationship to user table that would reference an ID
+        open var user: String? = null
 )

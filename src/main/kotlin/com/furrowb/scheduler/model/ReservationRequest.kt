@@ -6,6 +6,7 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
 data class ReservationRequest(
+        // I would like to have a custom validator that checks if the time is in the future and not the past
         @field:NotNull(message = "startDateTime must be specified")
         val startDateTime: OffsetDateTime,
         @field:NotNull(message = "durationInMinutes must be specified")
