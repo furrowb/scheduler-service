@@ -18,9 +18,9 @@ data class ReserveTestScenario(val name: String, val json: String)
 @WebMvcTest(AvailabilityController::class)
 class AvailabilityControllerSpec(): DescribeSpec ({
     lateinit var mockMvc: MockMvc
+    val endpoint = "/v1/reservation"
 
-    describe("Reserve endpoint") {
-        val endpoint = "/v1/availability/reserve"
+    describe("Creating a reservation") {
         val content = """
                 {
                     "startDateTime": "2020-12-03T10:15:30+01:00",
