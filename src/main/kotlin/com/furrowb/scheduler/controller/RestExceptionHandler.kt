@@ -15,14 +15,6 @@ data class ExceptionResponse(val status: Int, val errorMessage: String?)
 @ControllerAdvice
 class RestExceptionHandler: ResponseEntityExceptionHandler() {
 
-    @ExceptionHandler(ConstraintViolationException::class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ResponseBody
-    protected fun validationErrors(ex: ConstraintViolationException): ResponseEntity<ExceptionResponse> {
-        val message = ex.constraintViolations.map { "${it.propertyPath}: ${it.message}\n" }.toString()
-        return ResponseEntity(ExceptionResponse(HttpStatus.BAD_REQUEST.value(), message), HttpStatus.BAD_REQUEST)
-    }
-
     @ExceptionHandler(EntityExistsException::class)
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
