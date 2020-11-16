@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 import javax.persistence.EntityExistsException
+import javax.persistence.EntityNotFoundException
 import javax.validation.ConstraintViolationException
 
 data class ExceptionResponse(val status: Int, val errorMessage: String?)
@@ -20,5 +21,12 @@ class RestExceptionHandler: ResponseEntityExceptionHandler() {
     @ResponseBody
     protected fun entityExists(ex: EntityExistsException): ResponseEntity<ExceptionResponse> {
         return ResponseEntity(ExceptionResponse(HttpStatus.CONFLICT.value(), ex.message), HttpStatus.CONFLICT)
+    }
+
+    @ExceptionHandler(EntityNotFoundException::class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    protected fun entityDoesNotExist(ex: EntityNotFoundException): ResponseEntity<ExceptionResponse> {
+        return ResponseEntity(ExceptionResponse(HttpStatus.NOT_FOUND.value(), ex.message), HttpStatus.NOT_FOUND)
     }
 }

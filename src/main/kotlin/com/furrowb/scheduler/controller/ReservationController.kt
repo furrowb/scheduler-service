@@ -2,6 +2,7 @@ package com.furrowb.scheduler.controller
 
 import com.furrowb.scheduler.model.AvailabilityRequest
 import com.furrowb.scheduler.model.AvailabilityResponse
+import com.furrowb.scheduler.model.DeletionRequest
 import com.furrowb.scheduler.model.ReservationRequest
 import com.furrowb.scheduler.model.entity.Reservation
 import com.furrowb.scheduler.service.ReservationService
@@ -34,7 +35,8 @@ class ReservationController(@Autowired private val reservationService: Reservati
     }
 
     @DeleteMapping("/reservation")
-    fun deleteReservation() {
-
+    fun deleteReservation(@RequestBody @Validated request: DeletionRequest): ResponseEntity<Reservation> {
+        val response = reservationService.deleteReservation(request)
+        return ResponseEntity.status(HttpStatus.OK).body(response)
     }
 }

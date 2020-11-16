@@ -12,6 +12,6 @@ class TestConfig {
     }
 
     companion object {
-        val reservationRepoMock = mockk<ReservationRepository>()
+        val reservationRepoMock = mockk<ReservationRepository>(relaxUnitFun = true)
     }
 }

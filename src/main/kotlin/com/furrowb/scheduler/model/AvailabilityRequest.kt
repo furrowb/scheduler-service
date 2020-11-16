@@ -13,3 +13,7 @@ data class AvailabilityRequest(
         @field:Min(value = 1, message = "durationInMinutes must be greater than 0")
         val durationInMinutes: Int
 )
+
+// Since they are identical, just alias them
+// Intellij reports that this "class" is not being tested even though it is explicitly being tested in ReservationServiceTest.
+typealias DeletionRequest = AvailabilityRequest

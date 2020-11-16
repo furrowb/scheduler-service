@@ -170,24 +170,64 @@ class AvailabilityControllerSpec(): DescribeSpec ({
     }
 
     describe("Delete reservation") {
-        it("returns 200 if timeslot was deleted") {
+        val content = """
+                {
+                    "startDateTime": "2020-12-03T10:15:30+01:00",
+                    "durationInMinutes": 5
+                }
+            """.trimIndent()
 
-            fail("not tested")
+        beforeEach {
+            every { TestConfig.reservationRepoMock.getReservationByStartDateTimeAndEndDateTime(any(), any()) } returns
+                    listOf(Reservation(1, OffsetDateTime.now(), OffsetDateTime.now().plusMinutes(1), "A user"))
+            every { TestConfig.reservationRepoMock.deleteById(any()) } returns Unit
+            mockMvc = MockMvcBuilders
+                    .standaloneSetup(TestConfig().createAvailabilityController())
+                    .setControllerAdvice(RestExceptionHandler())
+                    .build()
+        }
+
+        it("returns 200 if timeslot was deleted") {
+            mockMvc.perform(MockMvcRequestBuilders.delete(endpoint)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(content))
+                    .andExpect(MockMvcResultMatchers.status().isOk)
         }
 
         it("returns 400 if startDateTime is invalid") {
-
-            fail("not tested")
+            val badRequest = """
+                {
+                    "startDateTime": "2020-13-03T10:15:30+01:00",
+                    "durationInMinutes": 1
+                }
+            """.trimIndent()
+            mockMvc.perform(MockMvcRequestBuilders.delete(endpoint)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(badRequest))
+                    .andExpect(MockMvcResultMatchers.status().isBadRequest)
         }
 
-        it("returns 400 if durationInMinutes is invalid") {
-
-            fail("not tested")
+        it("returns 400 if durationInMinutes is less than 1") {
+            val badRequest = """
+                {
+                    "startDateTime": "2020-12-03T10:15:30+01:00",
+                    "durationInMinutes": 0
+                }
+            """.trimIndent()
+            mockMvc.perform(MockMvcRequestBuilders.delete(endpoint)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(badRequest))
+                    .andExpect(MockMvcResultMatchers.status().isBadRequest)
         }
 
-        it("returns 400 if timeslot doesn't exist") {
+        it("returns 404 if timeslot doesn't exist") {
+            clearMocks(TestConfig.reservationRepoMock)
+            every { TestConfig.reservationRepoMock.getReservationByStartDateTimeAndEndDateTime(any(), any()) } returns emptyList()
 
-            fail("not tested")
+            mockMvc.perform(MockMvcRequestBuilders.delete(endpoint)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(content))
+                    .andExpect(MockMvcResultMatchers.status().isNotFound)
         }
     }
 })

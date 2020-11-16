@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 import java.time.OffsetDateTime
+import javax.xml.stream.events.EndDocument
 
 @Repository
 interface ReservationRepository: CrudRepository<Reservation, Long> {
@@ -17,5 +18,7 @@ interface ReservationRepository: CrudRepository<Reservation, Long> {
 
     fun getReservationById(id: Long): Reservation
 
-    fun deleteReservationById(id: Long)
+    // Would prefer this to only return a single Reservation since that's all it should ever return.
+    // Since I can't use LIMIT, I would have to investigate further on how to limit the results via Hibernate/JPA.
+    fun getReservationByStartDateTimeAndEndDateTime(startDateTime: OffsetDateTime, endDateTime: OffsetDateTime): List<Reservation>
 }
