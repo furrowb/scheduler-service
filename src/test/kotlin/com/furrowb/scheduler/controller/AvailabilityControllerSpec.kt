@@ -179,7 +179,7 @@ class AvailabilityControllerSpec(): DescribeSpec ({
 
         beforeEach {
             every { TestConfig.reservationRepoMock.getReservationByStartDateTimeAndEndDateTime(any(), any()) } returns
-                    listOf(Reservation(1, OffsetDateTime.now(), OffsetDateTime.now().plusMinutes(1), "A user"))
+                    Reservation(1, OffsetDateTime.now(), OffsetDateTime.now().plusMinutes(1), "A user")
             every { TestConfig.reservationRepoMock.deleteById(any()) } returns Unit
             mockMvc = MockMvcBuilders
                     .standaloneSetup(TestConfig().createAvailabilityController())
@@ -222,7 +222,7 @@ class AvailabilityControllerSpec(): DescribeSpec ({
 
         it("returns 404 if timeslot doesn't exist") {
             clearMocks(TestConfig.reservationRepoMock)
-            every { TestConfig.reservationRepoMock.getReservationByStartDateTimeAndEndDateTime(any(), any()) } returns emptyList()
+            every { TestConfig.reservationRepoMock.getReservationByStartDateTimeAndEndDateTime(any(), any()) } returns null
 
             mockMvc.perform(MockMvcRequestBuilders.delete(endpoint)
                     .contentType(MediaType.APPLICATION_JSON)

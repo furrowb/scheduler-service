@@ -45,11 +45,8 @@ class ReservationService(@Autowired private val reservationRepo: ReservationRepo
 
     @Transactional
     fun persistReservationDeletion(request: DeletionRequest): Reservation {
-        val reservations = reservationRepo.getReservationByStartDateTimeAndEndDateTime(request.startDateTime, calculateEndTime(request.startDateTime, request.durationInMinutes))
-        if (reservations.isEmpty()) {
-            throw EntityNotFoundException("A reservation could not be found for a request with the start time of ${request.startDateTime} and duration of ${request.durationInMinutes} minutes")
-        }
-        val reservation = reservations.first()
+        val reservation = reservationRepo.getReservationByStartDateTimeAndEndDateTime(request.startDateTime, calculateEndTime(request.startDateTime, request.durationInMinutes))
+                ?: throw EntityNotFoundException("A reservation could not be found for a request with the start time of ${request.startDateTime} and duration of ${request.durationInMinutes} minutes")
         reservationRepo.deleteById(reservation.id)
         return reservation
     }
