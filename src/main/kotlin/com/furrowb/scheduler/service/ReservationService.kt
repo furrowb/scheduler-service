@@ -69,6 +69,10 @@ class ReservationService(@Autowired private val reservationRepo: ReservationRepo
         return reservationRepo.save(entity)
     }
 
+    fun getReservationByID(id: Long): Reservation {
+        return reservationRepo.getReservationById(id) ?: throw EntityNotFoundException("No reservation for ID $id")
+    }
+
     private fun calculateEndTime(startDateTime: OffsetDateTime, durationInMinutes: Int): OffsetDateTime {
         return startDateTime.plusMinutes(durationInMinutes.toLong())
     }

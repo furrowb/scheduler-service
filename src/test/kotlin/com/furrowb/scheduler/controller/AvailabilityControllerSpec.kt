@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.time.OffsetDateTime
+import javax.persistence.EntityNotFoundException
 
 data class ReserveTestScenario(val scenario: String, val json: String)
 
@@ -166,6 +167,31 @@ class AvailabilityControllerSpec(): DescribeSpec ({
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(badRequest))
                     .andExpect(MockMvcResultMatchers.status().isBadRequest)
+        }
+    }
+
+    describe("Get Reservation By ID") {
+        beforeEach {
+            mockMvc = MockMvcBuilders
+                    .standaloneSetup(TestConfig().createAvailabilityController())
+                    .setControllerAdvice(RestExceptionHandler())
+                    .build()
+        }
+
+        it("returns 200 if reservation exists") {
+            val result = Reservation(1, OffsetDateTime.now(), OffsetDateTime.now().plusMinutes(5L))
+            every { TestConfig.reservationRepoMock.getReservationById(1L) } returns result
+            mockMvc.perform(MockMvcRequestBuilders.get("${endpoint}/1")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(result.toString()))
+                    .andExpect(MockMvcResultMatchers.status().isOk)
+        }
+
+        it("returns 404 if reservation doesn't exist") {
+            every { TestConfig.reservationRepoMock.getReservationById(1L) } throws EntityNotFoundException("No reservation for ID 1")
+            mockMvc.perform(MockMvcRequestBuilders.get("${endpoint}/1")
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(MockMvcResultMatchers.status().isNotFound)
         }
     }
 

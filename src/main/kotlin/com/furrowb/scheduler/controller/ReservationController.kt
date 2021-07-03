@@ -34,6 +34,12 @@ class ReservationController(@Autowired private val reservationService: Reservati
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response)
     }
 
+    @GetMapping("/reservation/{id}")
+    fun getReservationByID(@PathVariable id: Long): ResponseEntity<Reservation> {
+        val response = reservationService.getReservationByID(id)
+        return ResponseEntity.status(HttpStatus.OK).body(response)
+    }
+
     @DeleteMapping("/reservation")
     fun deleteReservation(@RequestBody @Validated request: DeletionRequest): ResponseEntity<Reservation> {
         val response = reservationService.deleteReservation(request)
