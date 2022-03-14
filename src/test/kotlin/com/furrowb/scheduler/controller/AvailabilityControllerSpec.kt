@@ -2,7 +2,6 @@ package com.furrowb.scheduler.controller
 
 import com.furrowb.scheduler.model.entity.Reservation
 import com.furrowb.scheduler.testConfig.TestConfig
-import io.kotest.assertions.fail
 import io.kotest.core.spec.style.DescribeSpec
 import io.mockk.clearMocks
 import io.mockk.every
